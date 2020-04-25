@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Víctor's Flask App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+        }
+
+        .article-body {
+            overflow-wrap: break-word;
+        }
+
+        .unhidden-on-mobile {
+            display: none;
+        }
+
+        /* Make the article editor bigger */
+        /* Reference: https://stackoverflow.com/questions/46559354/how-to-set-the-height-of-ckeditor-5-classic-editor */
+        .ck-editor__editable_inline {
+            min-height: 200px;
+        }
+
+        @media all and (max-width: 500px) {
+            .block-btn {
+                width: 100%;
+                display: block;
+            }
+
+            .hidden-on-mobile {
+                display: none;
+            }
+        }
+
+        @media all and (max-width: 1024px) {
+            .unhidden-on-mobile {
+                display: initial;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'includes/_navbar.html' %}
+
+    <div class="container">
+        {% include 'includes/_messages.html' %}
+        {% block body %}{% endblock %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/18.0.0/classic/ckeditor.js"></script>
+    <script>
+        // Render CKEditor, if present
+        let editor = document.querySelector('#editor');
+        if(editor) {
+            ClassicEditor
+            .create(document.querySelector('#editor'), {
+                removePlugins: ['Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload'],
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'indent', 'outdent', 'blockQuote', 'insertTable', 'mediaEmbed', 'undo', 'redo']
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+
+        // Change youtube oembeds to iframes
+        let oembeds = document.querySelectorAll('oembed');
+        oembeds.forEach(oembed => {
+            let url = oembed.getAttribute('url');
+            if(url && url.includes('youtube')) {
+                let videoID = url.split('watch?v=')[1];
+                let iframe = document.createElement('iframe');
+                iframe.setAttribute('src', `https://youtube.com/embed/${videoID}`);
+                iframe.setAttribute('type', 'text/html');
+                iframe.setAttribute('width', '640');
+                iframe.setAttribute('height', '360');
+                iframe.setAttribute('frameborder', '0');
+                oembed.insertAdjacentElement('afterend', iframe);
+                oembed.remove();
+            }
+        });
+    </script>
+</body>
+</html>

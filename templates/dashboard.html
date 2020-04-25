@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Dashboard</h1>
+    <h4><small class="text-muted">Welcome, {{ session.username }}</small></h4>
+    <a class="btn btn-success block-btn" href="/add_article">Add Article</a>
+    <hr>
+    {% if articles | length > 0 %}
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Your Articles</th>
+                    <th class="hidden-on-mobile">Content</th>
+                    <th></th> <!--For Edit-->
+                    <th></th> <!--For Delete-->
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in articles %}
+                <tr>
+                    <td>
+                        <a href="/article/{{ article.id }}">
+                            {{ article.title }}
+                        </a>
+                        <small class="text-muted d-block">{{ article.create_date.strftime('%B %d, %Y') }}</small>
+                    </td>
+                    <td class="hidden-on-mobile" style="max-width: 40%;">
+                        <span style=" overflow-wrap: break-word; overflow-x: hidden; text-overflow: hidden; white-space: nowrap; width: 100%;">
+                            {{ article.body[0:30] }}
+                        </span>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-secondary float-right" href="/edit_article/{{ article.id }}">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('delete_article', id=article.id) }}" method="POST">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">No articles yet!</div>
+    {% endif %}
+{% endblock %}
